@@ -1,0 +1,130 @@
+<div class="location-selector">
+  <div class="mb-3">
+    <label class="form-label" for="region">Region</label>
+    <select id="region" name="region" class="form-select form-select-lg" required>
+      <option value="">-- Select Region --</option>
+      <!-- PHP will populate with regions -->
+    </select>
+  </div>
+
+  <!-- Province Selection -->
+  <div class="mb-3">
+    <label class="form-label" for="province">Province</label>
+    <select id="province" name="province" class="form-select form-select-lg" required disabled>
+      <option value="">-- Select Province --</option>
+    </select>
+  </div>
+
+  <!-- City/Municipality Selection -->
+  <div class="mb-3">
+    <label class="form-label" for="city">City / Municipality</label>
+    <select id="city" name="city" class="form-select form-select-lg" required disabled>
+      <option value="">-- Select City --</option>
+    </select>
+  </div>
+</div>
+
+<style>
+.location-selector {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 10px;
+  border: 1px solid #dee2e6;
+}
+
+.form-select-lg {
+  font-size: 1rem;
+  padding: 12px 15px;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+  transition: all 0.3s ease;
+}
+
+.form-select-lg:hover {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-select-lg:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.25);
+}
+
+.form-select-lg:disabled {
+  background-color: #e9ecef;
+  cursor: not-allowed;
+}
+
+.form-label {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+}
+</style>
+
+<!-- JAVASCRIPT FOR CASCADING DROPDOWNS -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const regionSelect = document.getElementById('region');
+  const provinceSelect = document.getElementById('province');
+  const citySelect = document.getElementById('city');
+
+  // Handle region change
+  regionSelect.addEventListener('change', async function() {
+    if (!this.value) {
+      provinceSelect.innerHTML = '<option value="">-- Select Province --</option>';
+      citySelect.innerHTML = '<option value="">-- Select City --</option>';
+      provinceSelect.disabled = true;
+      citySelect.disabled = true;
+      return;
+    }
+
+    try {
+      const response = await fetch('get_locations.php?action=get_provinces&region=' + encodeURIComponent(this.value));
+      const provinces = await response.json();
+      
+      provinceSelect.innerHTML = '<option value="">-- Select Province --</option>';
+      provinces.forEach(province => {
+        const option = document.createElement('option');
+        option.value = province;
+        option.textContent = province;
+        provinceSelect.appendChild(option);
+      });
+      
+      provinceSelect.disabled = false;
+      citySelect.innerHTML = '<option value="">-- Select City --</option>';
+      citySelect.disabled = true;
+    } catch (error) {
+      console.error('Error fetching provinces:', error);
+      alert('Error loading provinces');
+    }
+  });
+
+  // Handle province change
+  provinceSelect.addEventListener('change', async function() {
+    if (!this.value) {
+      citySelect.innerHTML = '<option value="">-- Select City --</option>';
+      citySelect.disabled = true;
+      return;
+    }
+
+    try {
+      const response = await fetch('get_locations.php?action=get_cities&province=' + encodeURIComponent(this.value));
+      const cities = await response.json();
+      
+      citySelect.innerHTML = '<option value="">-- Select City --</option>';
+      cities.forEach(city => {
+        const option = document.createElement('option');
+        option.value = city;
+        option.textContent = city;
+        citySelect.appendChild(option);
+      });
+      
+      citySelect.disabled = false;
+    } catch (error) {
+      console.error('Error fetching cities:', error);
+      alert('Error loading cities');
+    }
+  });
+});
+</script>
