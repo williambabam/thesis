@@ -1,3 +1,5 @@
+// alerts.php //
+
 <?php
 declare(strict_types=1);
 require_once __DIR__ . '/../config.php';
@@ -98,4 +100,5 @@ $alerts = $pdo->query('SELECT * FROM system_alerts ORDER BY created_at DESC')->f
 </footer>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
